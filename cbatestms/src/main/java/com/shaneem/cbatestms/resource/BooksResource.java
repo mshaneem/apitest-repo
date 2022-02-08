@@ -4,8 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shaneem.cbatestms.model.Books;
@@ -46,6 +51,20 @@ public class BooksResource {
 		Optional<Books> book = repo.findByAuthor(author);
 		if (book.isPresent()) return book.get();
 		return null;
+	}
+	
+	@PostMapping("/books")
+	public Books createBook(@RequestBody Books book) {
+		Books newBook = repo.save(book);
+		return newBook;
+	}
+	
+	@PatchMapping("/books/{id}")
+	public ResponseEntity updateBook(@PathVariable Long id,@RequestBody Books book) {
+		if(!repo.existsById(id)) return (ResponseEntity) ResponseEntity.status(HttpStatus.NOT_FOUND);
+		
+		Books updatedBook = repo.save(book);
+		return ResponseEntity.ok(updatedBook);
 	}
 	
 }
